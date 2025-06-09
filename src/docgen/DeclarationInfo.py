@@ -17,5 +17,9 @@ class DeclarationInfo:
 class DefinitionInfo:
     file: str
     line: int
+    start_line: int
+    start_column: int
+    end_line: int
+    end_column: int
     is_definition: bool
     docstring: Optional[str]

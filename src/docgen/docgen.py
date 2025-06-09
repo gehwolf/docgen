@@ -76,7 +76,6 @@ def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[s
             is_typedef = cursor.kind == CursorKind.TYPEDEF_DECL
 
             if len(filter.rules) > 0 and not filter.should_include(name, decl_type):
-                print(f"skip {name} <{decl_type}>")
                 continue
 
             declarations[name] = DeclarationInfo(
@@ -109,7 +108,11 @@ def find_definitions(all_decls: Dict[str, DeclarationInfo], root_dir: str):
                         file=str(path),
                         line=cursor.location.line,
                         is_definition=True,
-                        docstring=cursor.raw_comment
+                        docstring=cursor.raw_comment,
+                        start_line=cursor.extent.start.line if cursor.extent else -1,
+                        start_column=cursor.extent.start.column if cursor.extent else -1,
+                        end_line=cursor.extent.end.line if cursor.extent else -1,
+                        end_column=cursor.extent.end.column if cursor.extent else -1,
                     )
 
 
@@ -169,7 +172,8 @@ def print_stats(decls: Dict[str, DeclarationInfo]):
 
 
 def generate_dummy_docstring(decl: DeclarationInfo) -> str:
-    return f"""/**\n * {decl.name} - FIXME: describe this {decl.decl_type}\n *\n * Parameters\n * ----------\n * FIXME: Add parameter descriptions\n */"""
+    doc_gen = AiDocGenerator.AiDocGenerator()
+    return doc_gen.generateFor(decl)
 
 
 def insert_docstrings(decls: Dict[str, DeclarationInfo], dry_run=False):
@@ -327,14 +331,14 @@ def main():
 
     if args.stats:
         print_stats(decls)
-    elif args.generate_docs:
+
+    if args.generate_docs:
         # insert_docstrings(decls, dry_run=args.dry_run)
         insert_docstrings_with_patches(decls, dry_run=args.dry_run)
-    elif args.apply_patches:
+
+    if args.apply_patches:
         apply_patches(args.patch_dir)
-    else:
-        for name, decl in decls.items():
-            print(f"{name} declared at {decl.file}:{decl.line}")
+
     return 0
 
 
