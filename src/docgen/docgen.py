@@ -19,7 +19,7 @@ def find_headers(root_dir):
 
 
 def find_source_files(root_dir):
-    return list(Path(root_dir).rglob("*.c")) + list(Path(root_dir).rglob("*.h"))
+    return list(Path(root_dir).rglob("*.c")) + list(Path(root_dir).rglob("*.h")) + list(Path(root_dir).rglob("*.hpp")) + list(Path(root_dir).rglob("*.cpp"))
 
 
 def extract_doc(cursor):
@@ -50,7 +50,7 @@ def process_declaration(cursor, lines, filepath):
 
 def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[str, DeclarationInfo]:
     index = Index.create()
-    tu = index.parse(str(filepath), args=["-std=c11"])
+    tu = index.parse(str(filepath), args=['-x', 'c++', '-std=c++17'])
     declarations = {}
 
     for cursor in tu.cursor.walk_preorder():
@@ -61,11 +61,17 @@ def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[s
         # We're interested in these declaration kinds
         if cursor.kind in {
             CursorKind.FUNCTION_DECL,
-            CursorKind.STRUCT_DECL,
-            CursorKind.UNION_DECL,
-            CursorKind.TYPEDEF_DECL,
-            CursorKind.ENUM_DECL,
+            CursorKind.CLASS_DECL,
+            CursorKind.CLASS_TEMPLATE,
+            CursorKind.CONSTRUCTOR,
+            CursorKind.CXX_METHOD,
+            CursorKind.DESTRUCTOR,
             CursorKind.ENUM_CONSTANT_DECL,
+            CursorKind.ENUM_DECL,
+            CursorKind.FUNCTION_TEMPLATE,
+            CursorKind.STRUCT_DECL,
+            CursorKind.TYPEDEF_DECL,
+            CursorKind.UNION_DECL,
         }:
             name = cursor.spelling
             if not name:  # Skip anonymous structs/enums
@@ -95,7 +101,7 @@ def find_definitions(all_decls: Dict[str, DeclarationInfo], root_dir: str):
     index = Index.create()
 
     for path in files:
-        tu = index.parse(str(path), args=["-std=c11"])
+        tu = index.parse(str(path), args=['-x', 'c++', '-std=c++17'])
         for cursor in tu.cursor.walk_preorder():
             if not cursor.location.file or Path(cursor.location.file.name) != path:
                 continue
@@ -172,8 +178,11 @@ def print_stats(decls: Dict[str, DeclarationInfo]):
 
 
 def generate_dummy_docstring(decl: DeclarationInfo) -> str:
-    doc_gen = AiDocGenerator.AiDocGenerator()
-    return doc_gen.generateFor(decl)
+    # doc_gen = AiDocGenerator.AiDocGenerator()
+    # return doc_gen.generateFor(decl)
+    return """/**
+ * @brief I am a doc string and tell you important things
+ **/"""
 
 
 def insert_docstrings(decls: Dict[str, DeclarationInfo], dry_run=False):

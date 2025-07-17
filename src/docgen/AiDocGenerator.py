@@ -56,7 +56,7 @@ class AiDocGenerator(object):
         return func_code
 
     def generateFor(self, decl: DeclarationInfo) -> str:
-        query = 'I give you the code of a C function and need a docstring for it. The docstring shall use the google style or numpy doc string format , do not use doxygen format. The content and style of the content shall follow the typical manpage style. So paramter and there value range shall be explained, return vales and there meanig and implications, side effects like setting errno or if resources are returned if caller has to take owner ship and responsibility. Please answer only with the docstring as it shall placed int the code no other additions or comments.'
+        query = 'I give you the code of a C++ function and need a docstring for it. The docstring shall use doxygen format. The content and style of the content shall follow the typical manpage style. So paramter and there value range shall be explained, return vales and there meanig and implications, side effects like setting errno or if resources are returned if caller has to take owner ship and responsibility. Please answer only with the docstring as it shall placed int the code no other additions or comments.'
 
         func_code = self._loadSourceCode(decl)
         query += f"The code to create the docstrng for is as follows: \n```\n{
