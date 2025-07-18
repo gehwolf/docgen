@@ -47,16 +47,24 @@ class AiDocGenerator(object):
 
     def _loadSourceCode(self, decl: DeclarationInfo):
         func_code = ''
+        source_file = decl.file
+        start_line = decl.line - 1
+        end_line = decl.line
 
-        with open(decl.definition.file, 'r') as f:
+        if decl.definition is not None:
+            source_file = decl.definition.file
+            start_line = decl.definition.start_line - 1
+            end_line = decl.definition.end_line
+
+        with open(source_file, 'r') as f:
             source_lines = f.readlines()
-            func_lines = source_lines[decl.definition.start_line-1 : decl.definition.end_line]
+            func_lines = source_lines[start_line: end_line]
             func_code = ''.join(func_lines)
 
         return func_code
 
     def generateFor(self, decl: DeclarationInfo) -> str:
-        query = 'I give you the code of a C++ function and need a docstring for it. The docstring shall use doxygen format. The content and style of the content shall follow the typical manpage style. So paramter and there value range shall be explained, return vales and there meanig and implications, side effects like setting errno or if resources are returned if caller has to take owner ship and responsibility. Please answer only with the docstring as it shall placed int the code no other additions or comments.'
+        query = 'I give you the code of a C++ function and need a docstring for it. The docstring shall use doxygen format. The content and style of the content shall follow the typical manpage style. So paramter and there value range shall be explained, return vales and there meanig and implications, side effects like setting errno or if resources are returned if caller has to take owner ship and responsibility. Please answer only with the docstring as it shall placed int the code no other additions or comments. Please only answer with the plain doxgen comment no code repetition or comments from your side'
 
         func_code = self._loadSourceCode(decl)
         query += f"The code to create the docstrng for is as follows: \n```\n{
