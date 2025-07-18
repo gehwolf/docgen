@@ -61,8 +61,6 @@ def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[s
         # We're interested in these declaration kinds
         if cursor.kind in {
             CursorKind.FUNCTION_DECL,
-            CursorKind.CLASS_DECL,
-            CursorKind.CLASS_TEMPLATE,
             CursorKind.CONSTRUCTOR,
             CursorKind.CXX_METHOD,
             CursorKind.DESTRUCTOR,
