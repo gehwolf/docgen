@@ -120,6 +120,8 @@ def find_definitions(all_decls: Dict[str, DeclarationInfo], root_dir: str):
                         end_line=cursor.extent.end.line if cursor.extent else -1,
                         end_column=cursor.extent.end.column if cursor.extent else -1,
                     )
+                else:
+                    print(f"⚠️ dupplicate definition for {decl_info.name}")
 
 
 def process_folder(folder, filter: Filters.DocstringFilter):
@@ -178,11 +180,11 @@ def print_stats(decls: Dict[str, DeclarationInfo]):
 
 
 def generate_dummy_docstring(decl: DeclarationInfo) -> str:
-    # doc_gen = AiDocGenerator.AiDocGenerator()
-    # return doc_gen.generateFor(decl)
-    return """/**
- * @brief I am a doc string and tell you important things
- **/"""
+    doc_gen = AiDocGenerator.AiDocGenerator()
+    return doc_gen.generateFor(decl)
+ #    return """/**
+ # * @brief I am a doc string and tell you important things
+ # **/"""
 
 
 def insert_docstrings(decls: Dict[str, DeclarationInfo], dry_run=False):
