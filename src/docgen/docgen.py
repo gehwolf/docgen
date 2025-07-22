@@ -82,7 +82,7 @@ def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[s
             if len(filter.rules) > 0 and not filter.should_include(name, decl_type):
                 continue
 
-            declarations[name] = DeclarationInfo(
+            declarations[cursor.get_usr()] = DeclarationInfo(
                 name=name,
                 decl_type=decl_type,
                 is_typedef=is_typedef,
@@ -104,7 +104,7 @@ def find_definitions(all_decls: Dict[str, DeclarationInfo], root_dir: str):
             if not cursor.location.file or Path(cursor.location.file.name) != path:
                 continue
 
-            name = cursor.spelling
+            name = cursor.get_usr()
             if name in all_decls and cursor.is_definition():
                 decl_info = all_decls[name]
                 if decl_info.definition is None:  # Don't overwrite first match
