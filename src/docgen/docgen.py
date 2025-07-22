@@ -47,6 +47,13 @@ def process_declaration(cursor, lines, filepath):
         lines.insert(line_num, placeholder)
         return None
 
+def get_qualified_name(cursor):
+    names = []
+    while cursor and cursor.kind != CursorKind.TRANSLATION_UNIT:
+        if cursor.spelling:
+            names.insert(0, cursor.spelling)
+        cursor = cursor.semantic_parent
+    return "::".join(names)
 
 def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[str, DeclarationInfo]:
     index = Index.create()
@@ -74,6 +81,12 @@ def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[s
             name = cursor.spelling
             if not name:  # Skip anonymous structs/enums
                 continue
+
+            if cursor.kind in [CursorKind.CXX_METHOD, CursorKind.FUNCTION_TEMPLATE, CursorKind.FUNCTION_DECL]:
+                print(f"usr: {cursor.get_usr()}")
+                print(f"displayname: {cursor.displayname}")
+                print(f"spelling: {cursor.spelling}")
+                print(f"fqn: {get_qualified_name(cursor)}")
 
             decl_type = cursor.kind.name.lower()
             docstring = cursor.raw_comment
