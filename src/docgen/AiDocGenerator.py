@@ -77,7 +77,7 @@ class AiDocGenerator(object):
 
         # print(f"test case :\n{result}")
         # result = "TBD"
-        with open(f"out_{decl.name}.txt", "w") as f:
+        with open(f"out_{decl.usr}.txt", "w") as f:
             f.write("query:")
             f.write(query)
             f.write(f"\n result in ({execution_time:.4f}):")
