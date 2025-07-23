@@ -80,7 +80,7 @@ class AiDocGenerator(object):
         with open(f"out_{decl.usr}.txt", "w") as f:
             f.write("query:")
             f.write(query)
-            f.write(f"\n result in ({execution_time:.4f}):")
+            f.write(f"\n result in ({execution_time:.4f}):\n")
             f.write(result)
 
         return result
