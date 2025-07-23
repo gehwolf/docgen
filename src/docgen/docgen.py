@@ -87,7 +87,7 @@ def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[s
                 print(f"displayname: {cursor.displayname}")
                 print(f"spelling: {cursor.spelling}")
                 print(f"fqn: {get_qualified_name(cursor)}")
-
+            
             decl_type = cursor.kind.name.lower()
             docstring = cursor.raw_comment
             is_typedef = cursor.kind == CursorKind.TYPEDEF_DECL
@@ -97,6 +97,8 @@ def parse_header_file(filepath: Path, filter: Filters.DocstringFilter) -> Dict[s
 
             declarations[cursor.get_usr()] = DeclarationInfo(
                 name=name,
+                qfn=get_qualified_name(cursor),
+                usr=cursor.get_usr(),
                 decl_type=decl_type,
                 is_typedef=is_typedef,
                 file=str(filepath),

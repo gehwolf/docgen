@@ -5,6 +5,8 @@ from typing import Optional
 @dataclass
 class DeclarationInfo:
     name: str
+    qfn: str
+    usr: str
     decl_type: str
     is_typedef: bool
     file: str
